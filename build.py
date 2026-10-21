@@ -1,5 +1,6 @@
 """Build a dependency-free static site: python3 build.py."""
 import json
+from hashlib import sha256
 from html import escape
 from pathlib import Path
 
@@ -32,6 +33,10 @@ for key, value in values.items():
     page = page.replace('{{' + key + '}}', value)
 if '{{' in page:
     raise ValueError('Unresolved template placeholder')
+# Give changed scripts and styles new URLs so a previous visit cannot reuse stale code.
+for asset in ('style.css', 'topology.js', 'app.js', 'neurons.js', 'demos.js', 'assets/neurots-growth.js'):
+    version = sha256((ROOT / 'site' / asset).read_bytes()).hexdigest()[:12]
+    page = page.replace(f'"{asset}"', f'"{asset}?v={version}"')
 (ROOT / 'site/index.html').write_text(page)
 (ROOT / 'site/sitemap.xml').write_text(f'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>{e(data["url"])}/</loc></url></urlset>\n')
 (ROOT / 'site/robots.txt').write_text(f'User-agent: *\nAllow: /\nSitemap: {data["url"]}/sitemap.xml\n')
