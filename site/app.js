@@ -2,7 +2,7 @@
   'use strict';
   const root=document.documentElement;
   const byId=id=>document.getElementById(id);
-  const labels={about:'About me',research:'Research',teaching:'Teaching',cv:'Curriculum vitae',contact:'Contact',playground:'Topology lab'};
+  const labels={about:'About me',research:'Research',teaching:'Teaching',cv:'Curriculum vitae',contact:'Contact',playground:'TDA demos'};
   const icons={about:'user',research:'folder',teaching:'book',cv:'file',contact:'mail',playground:'topology'};
   const win=byId('profile-window'),scroller=byId('content-scroll'),panels=[...document.querySelectorAll('.panel')];
   const start=byId('start'),menu=byId('start-menu');
@@ -11,7 +11,7 @@
   const save=(key,value)=>{try{localStorage.setItem(key,String(value));}catch{}};
   function closeMenu(){menu.hidden=true;start.setAttribute('aria-expanded','false');}
   function restore(){win.hidden=false;byId('desktop-welcome').hidden=true;byId('task-profile').setAttribute('aria-pressed','true');}
-  function hideWindow(){win.hidden=true;byId('desktop-welcome').hidden=false;byId('task-profile').setAttribute('aria-pressed','false');byId('task-profile').focus();stopLab();}
+  function hideWindow(){win.hidden=true;byId('desktop-welcome').hidden=false;byId('task-profile').setAttribute('aria-pressed','false');byId('task-profile').focus();stopLab();document.dispatchEvent(new Event('aero-leave-demos'));}
   function navigate(name,{history=true,focus=true,track=true}={}){
     if(!labels[name])name='about';
     if(track&&current!==name)backStack.push(current);
@@ -25,7 +25,7 @@
     byId('window-icon').setAttribute('href','#i-'+icons[name]);byId('back').disabled=backStack.length===0;
     if(history&&location.hash!=='#'+name)window.history.pushState({section:name},'', '#'+name);
     scroller.scrollTop=0;
-    if(name!=='playground')stopLab();
+    if(name!=='playground'){stopLab();document.dispatchEvent(new Event('aero-leave-demos'));}
     if(focus){const title=byId(name).querySelector('h1,h2');title.focus({preventScroll:true});if(matchMedia('(max-width:850px)').matches)byId(name).scrollIntoView({block:'start',behavior:'instant'});}
     if(name==='playground')requestAnimationFrame(resizeCanvas);
   }

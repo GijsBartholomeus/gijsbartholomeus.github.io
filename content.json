@@ -13,19 +13,31 @@
   "interests": [
     {
       "title": "Topological data analysis",
-      "text": "Finding structure in complex data through connectivity, loops, and the features that persist across scales."
+      "text": "Topological methods for point clouds, trees, and other data."
     },
     {
       "title": "Algebraic topology",
-      "text": "Studying shape through algebraic structures, and exploring how these ideas can inform applied questions."
+      "text": "Homology, persistence, and the mathematics behind topological descriptors."
     },
     {
       "title": "Mathematical biology",
-      "text": "Using mathematical models to understand the dynamics and organisation of living systems."
+      "text": "Mathematical models of biological systems."
     },
     {
-      "title": "Mathematics & medicine",
-      "text": "Bringing a clinical perspective to questions in mathematical modelling and the analysis of biomedical data."
+      "title": "Gene regulatory networks",
+      "text": "How interactions between genes give rise to different dynamical behaviours."
+    },
+    {
+      "title": "Sloppiness",
+      "text": "Why some combinations of model parameters matter much more than others."
+    },
+    {
+      "title": "Information geometry",
+      "text": "The geometry of statistical models and their parameter spaces."
+    },
+    {
+      "title": "Medicine",
+      "text": "Questions at the intersection of mathematics and clinical research."
     }
   ],
   "publications": [
@@ -70,5 +82,14 @@
     }
   ],
   "outreach": [],
-  "cv_updated": "21 October 2026"
+  "cv_updated": "21 October 2026",
+  "keywords": [
+    "Topological data analysis",
+    "Algebraic topology",
+    "Mathematical biology",
+    "Gene regulatory networks",
+    "Sloppiness",
+    "Information geometry",
+    "Medicine"
+  ]
 }

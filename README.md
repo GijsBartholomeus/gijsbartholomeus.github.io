@@ -17,7 +17,7 @@ Open http://127.0.0.1:8000. Stop with Ctrl+C. You can also open
 
 ## Included
 
-- Six folders: About me, Research, Teaching, CV, Contact, and Topology lab.
+- Six folders: About me, Research, Teaching, CV, Contact, and TDA demos.
 - Start menu, taskbar, live Oxford clock, draggable profile window on desktop,
   minimize/close/restore, maximize, back navigation, and linkable section URLs.
 - Daylight and evening themes.
@@ -116,3 +116,50 @@ the CV; DOI destinations were not independently verified.
 `site/assets/aero-wallpaper.png` was generated with the built-in image tool for
 this website. The prompt is preserved in `assets-notes.md`. All interface icons
 are local SVG, and the site makes no requests for third-party image assets.
+
+## Tree and barcode demos
+
+`site/neurons.js` implements the elder-rule TMD calculation for synthetic trees
+with radius increasing away from the soma. The TMD view links branch colours,
+barcode intervals, a radial sweep, and the number of components outside the circle.
+The fixtures for this view are generated with a small exact inverse construction;
+they are educational radial trees. The separate TNS view uses actual recorded
+NeuroTS runs, described below.
+
+Method references:
+
+- Kanari, Dłotko, Scolamiero et al. (2018), *A Topological Representation of
+  Branching Neuronal Morphologies*. https://doi.org/10.1007/s12021-017-9341-1
+- Kanari, Garin & Hess (2020), *From Trees to Barcodes and Back Again:
+  Theoretical and Statistical Perspectives*. https://doi.org/10.3390/a13120335
+- Kanari, Dictus, Chalimourda et al. (2022), *Computational synthesis of cortical
+  dendritic morphologies*. https://doi.org/10.1016/j.celrep.2022.110586
+
+Run `node tests/neurons.test.cjs` to check the elder rule, filtration limits,
+invalid inputs, and 200 independent barcode round trips across random seeds.
+
+### Recorded NeuroTS synthesis
+
+The TNS view shows a genuine source → barcode → synthesis pipeline, computed
+offline with NeuroTS 3.7.0 and TMD 2.4.3. A synthetic apical dendrite (seed 42) is
+generated from the authors’ example distributions. Its path-distance TMD barcode
+and branch-angle properties are extracted with TMD, then used as the input to
+three new NeuroTS runs (seeds 137, 271, 459). The browser replays the actual growth
+iteration associated with each segment. This is a 2D projection of 3D geometry.
+Playback progress is algorithmic, not biological time. Different stochastic runs
+need not reproduce the source barcode or branching structure exactly.
+
+- Playback asset: `site/assets/neurots-growth.js` (generated data only).
+- Downloadable 3D morphologies: `site/assets/neurots-apical-*.swc`.
+- Reproduction script and preserved inputs: `demo-source/neurots/`.
+- Upstream input revision: `openbraininstitute/NeuroTS`, commit
+  `5ee2931192c12337b34be27ac0aa61353e136284`, `examples/data/bio_*.json`.
+- The source inputs’ Apache 2.0 license is included as
+  `demo-source/neurots/LICENSE-NeuroTS.txt`. Inputs were retained unchanged; the
+  generator restricts growth to the apical dendrite in memory and subsequently
+  substitutes the extracted barcode and angles. No upstream implementation code
+  is shipped as browser code.
+
+To regenerate, install `demo-source/neurots/requirements.txt` in a Python 3.12
+virtual environment, then run `python demo-source/neurots/generate.py`. Scientific Python
+dependencies are needed only for this offline step. The website remains static.
