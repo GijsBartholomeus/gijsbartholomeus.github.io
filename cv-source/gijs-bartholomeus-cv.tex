@@ -1,0 +1,162 @@
+\documentclass[10pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[a4paper,top=17mm,bottom=18mm,left=19mm,right=19mm]{geometry}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage[hidelinks]{hyperref}
+\hypersetup{
+  pdftitle={Gijs Bartholomeus - Curriculum Vitae},
+  pdfauthor={Gijs Bartholomeus}
+}
+
+\definecolor{ink}{HTML}{20242A}
+\definecolor{muted}{HTML}{5E6873}
+\definecolor{rulegray}{HTML}{A8AFB7}
+
+\color{ink}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\setlength{\tabcolsep}{0pt}
+\renewcommand{\arraystretch}{1}
+\urlstyle{same}
+
+\titleformat{\section}
+  {\large\bfseries\color{ink}}
+  {}{0pt}{}
+  [\vspace{2pt}\color{rulegray}\titlerule]
+\titlespacing*{\section}{0pt}{11pt}{6pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyfoot[R]{\footnotesize\color{muted}\thepage\ of \pageref*{LastPage}}
+\setlength{\footskip}{10mm}
+
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{D}{>{\raggedleft\arraybackslash\color{muted}\footnotesize}p{31mm}}
+
+\newcommand{\cvitem}[4]{%
+  \begin{tabularx}{\textwidth}{@{}Y D@{}}
+    \textbf{#1} & #2 \\
+    \textit{#3} & \\
+  \end{tabularx}
+  \vspace{1pt}#4\par\vspace{5pt}
+}
+
+\newcommand{\cvitemshort}[3]{%
+  \begin{tabularx}{\textwidth}{@{}Y D@{}}
+    \textbf{#1} & #2 \\
+  \end{tabularx}
+  \vspace{1pt}#3\par\vspace{5pt}
+}
+
+\newenvironment{cvlist}{%
+  \begin{itemize}[leftmargin=4.5mm,itemsep=3pt,topsep=1pt,parsep=0pt]
+}{\end{itemize}}
+
+\begin{document}
+
+\begin{center}
+  {\fontsize{27}{30}\selectfont\bfseries Gijs Bartholomeus}\par
+  \vspace{3pt}
+  {\large\itshape Curriculum Vitae}\par
+  \vspace{3pt}
+  {\small 21 October 2026}\par
+  \vspace{7pt}
+  \small
+  Oxford, United Kingdom
+  \quad\textbar\quad
+  \href{https://www.linkedin.com/in/gijsbartholomeus}{linkedin.com/in/gijsbartholomeus}
+\end{center}
+
+\section{Education}
+
+\cvitem{DPhil in Mathematics}{Oct 2026 -- Jul 2030}
+  {University of Oxford}
+  {Research in mathematical biology, algebraic topology, and topological data analysis. Supervisors: Helen Byrne, Alain Goriely, Lida Kanari, and Heather Harrington.}
+
+\cvitem{Double MSc in Physics and Mathematics, cum laude}{Sep 2023 -- Jul 2026}
+  {Utrecht University}
+  {Weighted average: 8.7/10\textsuperscript{*}.\par Thesis: \textit{Simplicity Bias and Sloppiness in Gene Regulatory Networks}, completed as a Recognised Student at the University of Oxford under the supervision of Ard Louis.}
+
+\cvitem{Double BSc in Physics and Mathematics, cum laude}{Sep 2020 -- Jul 2022}
+  {Utrecht University}
+  {Thesis: \textit{Stochastic extinction dynamics in Lotka--Volterra models using Random Matrix Theory}.}
+
+\cvitem{MSc in Medicine}{Sep 2022 -- Jul 2024}
+  {Utrecht University}
+  {Clinical management courses and full-time hospital residencies. Research project on variational autoencoders for harmonising medical imaging data.}
+
+\cvitem{BSc in Medicine, cum laude}{Sep 2017 -- Jul 2021}
+  {Utrecht University}
+  {}
+
+{\footnotesize\color{muted}\textsuperscript{*}The Dutch grading scale runs from 1 to 10; 6 is a pass, and grades of 9 or 10 are rarely awarded. Cum laude requires a weighted average of at least 8.0.\par}
+
+\section{Research Experience}
+
+\cvitem{Junior Researcher}{Dec 2018 -- Sep 2022}
+  {Department of Radiology, Utrecht University}
+  {Investigated the reproducibility of quantitative CT image analysis (radiomics), contributing to work on the robustness of pulmonary-nodule features across radiation dose levels.}
+
+\cvitem{MSc Research, Recognised Student}{2025 -- 2026}
+  {University of Oxford}
+  {Using ODE models of the budding-yeast cell cycle, identified a frequency--complexity envelope in which highly complex dynamical phenotypes were not frequent, while wild-type-like oscillations occupied a relatively high-frequency region. Developed a nested neutral-set estimator for rare phenotype-preserving volumes and related these global biases to locally sloppy parameter-space geometry.}
+
+\newpage
+
+\section{Publications}
+
+\begin{enumerate}[leftmargin=5mm,label={\arabic*.},itemsep=5pt,topsep=1pt]
+  \item \textbf{Bartholomeus, G. A.}, van Amsterdam, W. A. C., den Harder, A. M., Willemink, M. J., van Hamersvelt, R. W., de Jong, P. A., and Leiner, T. (2023). \href{https://doi.org/10.1007/s00330-023-09643-8}{Robustness of pulmonary nodule radiomic features on computed tomography as a function of varying radiation dose levels: a multi-dose in vivo patient study}. \textit{European Radiology}, 33, 7044--7055.
+  \item van Amsterdam, W. A. C., Verhoeff, J. J. C., Harlianto, N. I., \textbf{Bartholomeus, G. A.}, Puli, A. M., de Jong, P. A., Leiner, T., van Lindert, A. S. R., Eijkemans, M. J. C., and Ranganath, R. (2022). \href{https://doi.org/10.1038/s41598-022-09775-9}{Individual treatment effect estimation in the presence of unobserved confounding using proxies: a cohort study in stage III non-small cell lung cancer}. \textit{Scientific Reports}, 12, 5848.
+\end{enumerate}
+
+\section{Teaching Experience}
+
+\cvitem{Teaching Assistant}{Sep 2020 -- Jul 2026}
+  {Utrecht University}
+  {Organised and taught courses across the departments of physics, mathematics, and medicine.}
+
+\cvitem{Senior Teacher}{Jan 2018 -- Jul 2025}
+  {Stichting Studiebegeleiding, Leiden}
+  {Delivered intensive one- to four-day examination-preparation courses for classes of up to 30 secondary-school students and led a team of seven teaching assistants.}
+
+\section{Professional Experience}
+
+\cvitem{Medical Technology Specialist}{Nov 2025 -- present}
+  {Medscio Interoperability B.V.}
+  {Map clinical laboratory parameters from heterogeneous hospital systems to standard terminologies. Built and benchmarked LLM-based extraction pipelines and developed a SapBERT embedding search engine over SNOMED CT for Dutch cardiology data.}
+
+\cvitem{Science Trainee}{Jan 2023 -- May 2023}
+  {MIcompany (now Rewire)}
+  {Built a LightGBM subscription-pricing model for a national golf federation, supporting recommendations on membership tiers and price points.}
+
+\section{Leadership and Activities}
+
+\cvitem{Committee Chair, Triton Career Days}{2021 -- 2022}
+  {U.S.R. ``Triton''}
+  {Chaired the committee responsible for the student rowing association's annual careers event.}
+
+\cvitem{Competitive Rower}{Sep 2017 -- May 2022}
+  {U.S.R. ``Triton''}
+  {Competed at national level while training up to 20 hours per week.}
+
+\section{Technical Skills}
+
+\begin{tabularx}{\textwidth}{@{}>{\bfseries}p{37mm}Y@{}}
+  Programming & Python (NumPy, SciPy, PyTorch, TensorFlow), R, MATLAB, C\#, Lean/mathlib (basic familiarity), Git, Linux \\[4pt]
+  Mathematics & Algebraic topology, topological data analysis, dynamical systems, differential and information geometry, random matrix theory, probability \\[4pt]
+  Methods & ODE modelling, Monte Carlo methods, high-dimensional sampling, optimisation, dimensionality reduction, machine learning \\
+\end{tabularx}
+
+\end{document}

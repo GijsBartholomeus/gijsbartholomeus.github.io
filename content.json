@@ -1,0 +1,74 @@
+{
+  "name": "Gijs Bartholomeus",
+  "email": "gijs.bartholomeus@balliol.ox.ac.uk",
+  "github": "https://github.com/gijsbartholomeus",
+  "linkedin": "https://www.linkedin.com/in/gijsbartholomeus",
+  "url": "https://gijsbartholomeus.github.io",
+  "intro": "I study mathematics at the intersection of topology, biology, and medicine.",
+  "about": [
+    "I am a DPhil student in Mathematics at the University of Oxford and a member of Balliol College. My interests lie in topological data analysis, algebraic topology, and mathematical biology, with a particular curiosity about the connections between mathematics and medicine.",
+    "My route into mathematics began in medicine. Alongside my medical training, I studied mathematics and physics at Utrecht University, completing master's degrees in all three subjects. That background continues to shape the questions I find interesting: how can mathematical structure help us understand complex biological systems?",
+    "My supervisors include Helen Byrne, Alain Goriely, Lida Kanari, and Heather Harrington. Previously, I worked with Ard Louis at Oxford on simplicity bias and sloppiness in gene regulatory networks."
+  ],
+  "interests": [
+    {
+      "title": "Topological data analysis",
+      "text": "Finding structure in complex data through connectivity, loops, and the features that persist across scales."
+    },
+    {
+      "title": "Algebraic topology",
+      "text": "Studying shape through algebraic structures, and exploring how these ideas can inform applied questions."
+    },
+    {
+      "title": "Mathematical biology",
+      "text": "Using mathematical models to understand the dynamics and organisation of living systems."
+    },
+    {
+      "title": "Mathematics & medicine",
+      "text": "Bringing a clinical perspective to questions in mathematical modelling and the analysis of biomedical data."
+    }
+  ],
+  "publications": [
+    {
+      "year": "2023",
+      "title": "Robustness of pulmonary nodule radiomic features on computed tomography as a function of varying radiation dose levels: a multi-dose in vivo patient study",
+      "authors": "G. A. Bartholomeus, W. A. C. van Amsterdam, A. M. den Harder, M. J. Willemink, R. W. van Hamersvelt, P. A. de Jong & T. Leiner",
+      "venue": "European Radiology · 33, 7044–7055",
+      "url": "https://doi.org/10.1007/s00330-023-09643-8"
+    },
+    {
+      "year": "2022",
+      "title": "Individual treatment effect estimation in the presence of unobserved confounding using proxies: a cohort study in stage III non-small cell lung cancer",
+      "authors": "W. A. C. van Amsterdam, J. J. C. Verhoeff, N. I. Harlianto, G. A. Bartholomeus, A. M. Puli, P. A. de Jong, T. Leiner, A. S. R. van Lindert, M. J. C. Eijkemans & R. Ranganath",
+      "venue": "Scientific Reports · 12, 5848",
+      "url": "https://doi.org/10.1038/s41598-022-09775-9"
+    }
+  ],
+  "projects": [
+    {
+      "year": "2025–26",
+      "title": "Simplicity bias and sloppiness in gene regulatory networks",
+      "description": "Master's research on dynamical phenotypes in models of the budding-yeast cell cycle, connecting global biases in behaviour with local parameter-space geometry.",
+      "meta": "MSc thesis · University of Oxford · Supervisor: Ard Louis",
+      "url": ""
+    }
+  ],
+  "preprints": [],
+  "notes": [],
+  "teaching": [
+    {
+      "year": "2020–26",
+      "title": "Teaching assistant",
+      "institution": "Utrecht University",
+      "text": "Teaching across mathematics, physics, and medicine."
+    },
+    {
+      "year": "2018–25",
+      "title": "Senior teacher",
+      "institution": "Stichting Studiebegeleiding, Leiden",
+      "text": "Intensive examination-preparation courses for secondary-school students, alongside leading a team of teaching assistants."
+    }
+  ],
+  "outreach": [],
+  "cv_updated": "21 October 2026"
+}
