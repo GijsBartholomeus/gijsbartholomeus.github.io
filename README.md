@@ -42,6 +42,9 @@ workflow regenerates it from the source on each manual deployment.
 
 - Publications/preprints: `year`, `title`, `authors`, `venue`, `url`.
 - Projects/notes/outreach: `year`, `title`, `description`, `meta`, `url`.
+- Interest descriptions and `references` (`authors`, `title`, `url`) appear in
+  hover, keyboard, and tap popovers on the Research introduction. References are
+  introductory reading; publications remain in their own list.
 - Empty categories are hidden. No fictional research or outreach is included.
 - Replace `site/assets/portrait.png` to change the photograph.
 - Structure: `template.html`; styling: `site/style.css`; controls: `site/app.js`.
@@ -119,12 +122,11 @@ are local SVG, and the site makes no requests for third-party image assets.
 
 ## Tree and barcode demos
 
-`site/neurons.js` implements the elder-rule TMD calculation for synthetic trees
-with radius increasing away from the soma. The TMD view links branch colours,
-barcode intervals, a radial sweep, and the number of components outside the circle.
-The fixtures for this view are generated with a small exact inverse construction;
-they are educational radial trees. The separate TNS view uses actual recorded
-NeuroTS runs, described below.
+`site/neurons.js` implements an iterative elder-rule TMD calculation for rooted
+trees with a monotone distance value. The synthetic fixtures use radius; the
+biological examples use length along the original 3D branches. The TMD view links
+branch colours and numbers, barcode intervals, and a shared distance cut.
+The separate TNS view uses actual recorded NeuroTS runs, described below.
 
 Method references:
 
@@ -166,14 +168,31 @@ dependencies are needed only for this offline step. The website remains static.
 
 ### Comparing morphologies and synthesis runs
 
-The TMD view compares a long trunk with a terminal tuft against a tree that
-branches earlier and more broadly. Both are synthetic examples with eight tips
-and maximum radius 100; the radial sweep and branch highlighting apply to both.
-They illustrate distinct branching patterns rather than labelled biological
-cell types. Morphological cell-type classification is cited to Kanari et al.
-(2019), https://doi.org/10.1093/cercor/bhy339.
+The TMD view uses the authors’ biological example reconstructions C220197A-P2
+and Fluo55_left, retaining the original geometry. The colour-coded apical arbors
+have 30 and 8 terminals; basal dendrites are shown in grey for context. No
+biological cell-type labels have been inferred. Morphological cell-type
+classification is cited to Kanari et al. (2019),
+https://doi.org/10.1093/cercor/bhy339.
+
+`demo-source/cells/prepare.py` processes the unchanged H5 inputs from the NeuroTS
+repository, revision `5ee2931192c12337b34be27ac0aa61353e136284`,
+`examples/data/neurons/`. It compares the extracted path-distance barcodes to TMD
+2.4.3. Browser data are in `site/assets/tmd-cells.js`; the independent JavaScript
+calculation is checked against those official descriptors. One repeated,
+zero-length point is collapsed. This leaves the metric tree unchanged. The
+upstream Apache 2.0 license is retained in
+`demo-source/neurots/LICENSE-NeuroTS.txt`. To regenerate, run
+`python demo-source/cells/prepare.py` in the same scientific Python environment.
+The slider uses the same fraction of each arbor’s maximum path length; barcode
+axes and cell drawings use common physical scales.
 
 The third box of the NeuroTS pipeline displays all three recorded trees side by
 side. The shared slider and playback set the same relative completion percentage
 for each run, whose total algorithm-step counts differ. All three downloads are
 available together. The right-hand desktop gadgets have been removed.
+
+The Medscio bio text is supplied by Gijs. The hospital-records quotation is from
+Scott Alexander, *Meditations on Moloch* (30 July 2014),
+https://slatestarcodex.com/2014/07/30/meditations-on-moloch/. The attribution was
+verified against that original post.

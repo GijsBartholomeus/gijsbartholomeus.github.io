@@ -1,74 +1,77 @@
 (() => {
   'use strict';
-  const {examples,synthesize,describe,active,sameBarcode}=AeroNeurons;
+  const {describe,active}=AeroNeurons;
   const byId=id=>document.getElementById(id);
   const colours=['#177ca4','#b26a16','#7653b3','#218878','#b84d6b','#627b24','#3972be','#996028'];
-  const colour=id=>colours[id%colours.length];
+  const colour=id=>colours[id]||`hsl(${(id*137.508)%360} 58% 42%)`;
   const number=x=>Number(x.toFixed(2));
-  const point=(r,theta)=>[180+2*r*Math.sin(theta),252-2*r*Math.cos(theta)];
-  const position=n=>point(n.r,n.theta);
-  function segment(a,b,low,high){
-    const from=Math.max(a.r,low),to=Math.min(b.r,high);if(to<=from)return '';
-    const count=Math.max(2,Math.ceil((to-from)/2)),points=[];
-    for(let i=0;i<=count;i++){
-      const r=from+(to-from)*i/count,t=(r-a.r)/(b.r-a.r);
-      const theta=a.theta+(b.theta-a.theta)*t;
-      points.push(point(r,theta).map(number).join(','));
+  const comparisons=AeroTMDCells.map(c=>({...c,descriptor:describe(c)}));
+  const geometry=comparisons.flatMap(c=>[...c.nodes.map(n=>[n.x,n.y]),...c.ghost.flatMap(g=>[[g[0],g[1]],[g[3],g[4]]])]);
+  const minX=Math.min(...geometry.map(p=>p[0])),maxX=Math.max(...geometry.map(p=>p[0])),minY=Math.min(...geometry.map(p=>p[1])),maxY=Math.max(...geometry.map(p=>p[1]));
+  const cellScale=Math.min(285/(maxX-minX),365/(maxY-minY)),middle=(minX+maxX)/2;
+  const project=(x,y)=>[180+(x-middle)*cellScale,405-(y-minY)*cellScale];
+  const maxDistance=Math.ceil(Math.max(...comparisons.flatMap(c=>c.descriptor.bars.map(b=>b.end)))/250)*250;
+  const selectedFor=c=>{const [cell,branch]=byId('tmd-highlight').value.split(':');return cell===c.key?Number(branch):'all';};
+  function drawCell(c,cut){
+    const svg=byId('tmd-tree-'+c.key),selected=selectedFor(c);let markup='';
+    const path=(a,b)=>`M${number(a[0])} ${number(a[1])}L${number(b[0])} ${number(b[1])}`;
+    markup+=`<path class="cell-context" d="${c.ghost.map(g=>path(project(g[0],g[1]),project(g[3],g[4]))).join('')}"/>`;
+    const branches=new Map();
+    for(const n of c.nodes.slice(1)){
+      const parent=c.nodes[n.parent],owner=c.descriptor.owners[n.id];
+      if(!branches.has(owner))branches.set(owner,{full:'',outer:'',cuts:[]});
+      const branch=branches.get(owner),a=project(parent.x,parent.y),b=project(n.x,n.y);
+      branch.full+=path(a,b);
+      if(n.r>=cut){
+        const t=Math.max(0,Math.min(1,(cut-parent.r)/(n.r-parent.r)));
+        const start=[a[0]+t*(b[0]-a[0]),a[1]+t*(b[1]-a[1])];
+        branch.outer+=path(start,b);if(parent.r<cut)branch.cuts.push(start);
+      }
     }
-    return points.join(' ');
-  }
-  function drawTree(svg,tree,descriptor,{radius=0,growth=100,selected='all',filtration=false}={}){
-    let markup='';
-    // Guides share the radial coordinate used by the barcode.
-    for(const r of [25,50,75,100])markup+=`<circle class="neuron-guide" cx="180" cy="252" r="${r*2}"/>`;
-    for(const n of tree.nodes.slice(1)){
-      const parent=tree.nodes[n.parent],owner=descriptor.owners[n.id],isSelected=selected==='all'||Number(selected)===owner;
-      const full=segment(parent,n,0,100),shown=segment(parent,n,filtration?radius:0,growth);
-      markup+=`<polyline points="${full}" fill="none" stroke="${colour(owner)}" stroke-width="2.4" opacity=".14"/>`;
-      if(shown)markup+=`<polyline points="${shown}" fill="none" stroke="${colour(owner)}" stroke-width="${isSelected?3:1.8}" opacity="${isSelected?1:.2}" stroke-linecap="round"/>`;
+    for(const [owner,branch] of branches){
+      const chosen=selected==='all'||selected===owner;
+      markup+=`<path d="${branch.full}" class="cell-trace" stroke="${colour(owner)}" opacity=".16"/>`;
+      markup+=`<path d="${branch.outer}" class="cell-trace" stroke="${colour(owner)}" opacity="${chosen?1:.15}"/>`;
+      markup+=branch.cuts.map(p=>`<circle cx="${number(p[0])}" cy="${number(p[1])}" r="2.2" fill="${colour(owner)}"/>`).join('');
     }
-    if(filtration)markup+=`<circle class="filtration-circle" cx="180" cy="252" r="${radius*2}"/>`;
-    const parents=new Set(tree.nodes.map(n=>n.parent));
-    for(const n of tree.nodes.slice(1))if(!parents.has(n.id)){
-      const [x,y]=position(n),lit=n.r<=growth&&(!filtration||n.r>=radius),isSelected=selected==='all'||Number(selected)===n.source;
-      markup+=`<circle cx="${number(x)}" cy="${number(y)}" r="3.3" fill="${colour(n.source)}" opacity="${lit&&isSelected?1:.22}"/><text class="neuron-tip" x="${number(x)}" y="${number(y-9)}" opacity="${isSelected?1:.3}">${n.source+1}</text>`;
+    // Place terminal numbers in two columns to keep dense biological tufts legible.
+    const terminals=c.descriptor.bars.map(b=>({...b,at:project(c.nodes[b.tip].x,c.nodes[b.tip].y)})).sort((a,b)=>a.at[0]-b.at[0]);
+    for(const [side,group] of [terminals.slice(0,Math.ceil(terminals.length/2)),terminals.slice(Math.ceil(terminals.length/2))].entries()){
+      group.sort((a,b)=>a.at[1]-b.at[1]);let previous=12;
+      const ys=group.map(b=>{const y=Math.max(b.at[1],previous+12);previous=y;return y;});
+      const shift=Math.max(0,(ys[ys.length-1]||0)-390);
+      group.forEach((b,i)=>{
+        const x=side?340:20,y=ys[i]-shift,chosen=selected==='all'||selected===b.source,opacity=chosen?1:.2;
+        markup+=`<path class="cell-leader" d="${path(b.at,[x+(side?-9:9),y-3])}" stroke="${colour(b.source)}" opacity="${chosen?.38:.1}"/><circle cx="${number(b.at[0])}" cy="${number(b.at[1])}" r="1.8" fill="${colour(b.source)}"/><text class="cell-number" x="${x}" y="${number(y)}" fill="${colour(b.source)}" opacity="${opacity}" text-anchor="middle">${b.source+1}</text>`;
+      });
     }
-    markup+='<circle class="neuron-soma" cx="180" cy="252" r="5"/><text class="neuron-label" x="180" y="274" text-anchor="middle">soma</text>';
+    const root=project(c.nodes[0].x,c.nodes[0].y);
+    markup+=`<circle class="neuron-soma" cx="${number(root[0])}" cy="${number(root[1])}" r="4"/><path class="neurots-scalebar" d="M25 426h${number(100*cellScale)}"/><text class="neuron-label" x="25" y="419">100 μm</text>`;
     svg.innerHTML=markup;
   }
-  function drawBarcode(svg,bars,{radius=0,selected='all',filtration=false,growth=null}={}){
-    let markup='';const x=r=>40+2.8*r;
-    for(const r of [0,25,50,75,100])markup+=`<path class="barcode-grid" d="M${x(r)} 22V236"/><text class="neuron-label" x="${x(r)}" y="251" text-anchor="middle">${r}</text>`;
-    bars.forEach((bar,i)=>{
-      const y=38+i*25,on=!filtration||active(bar,radius),chosen=selected==='all'||Number(selected)===bar.source;
-      const opacity=chosen?(on?1:.55):.18;
-      markup+=`<text class="neuron-label" x="20" y="${y+4}" text-anchor="middle">${bar.source+1}</text><path d="M${x(bar.start)} ${y}H${x(bar.end)}" stroke="${colour(bar.source)}" stroke-width="6" opacity="${opacity}" stroke-linecap="round"/>`;
-      markup+=`<circle cx="${x(bar.start)}" cy="${y}" r="3" fill="${colour(bar.source)}" opacity="${opacity}"/><circle cx="${x(bar.end)}" cy="${y}" r="3" fill="${colour(bar.source)}" opacity="${opacity}"/>`;
+  function drawCellBarcode(c,cut){
+    const svg=byId('tmd-barcode-'+c.key),selected=selectedFor(c),x=r=>42+280*r/maxDistance;let markup='';
+    for(let r=0;r<=maxDistance;r+=250)markup+=`<path class="barcode-grid" d="M${x(r)} 20V391"/><text class="neuron-label" x="${x(r)}" y="408" text-anchor="middle">${r}</text>`;
+    c.descriptor.bars.forEach((b,i)=>{
+      const y=30+i*12,chosen=selected==='all'||selected===b.source,on=active(b,cut),opacity=chosen?(on?1:.65):.15;
+      markup+=`<text class="cell-bar-number" x="20" y="${y+3.5}" text-anchor="middle">${b.source+1}</text><path d="M${x(b.start)} ${y}H${x(b.end)}" stroke="${colour(b.source)}" stroke-width="5" opacity="${opacity}" stroke-linecap="round"><title>Branch ${b.source+1}: ${number(b.start)}–${number(b.end)} μm</title></path>`;
     });
-    const cursor=growth===null?radius:growth;
-    markup+=`<path class="barcode-cursor" d="M${x(cursor)} 20V235"/><text class="neuron-label" x="180" y="274" text-anchor="middle">distance from soma · arbitrary units</text>`;
-    svg.innerHTML=markup;
-    svg.setAttribute('aria-label',bars.map(b=>`Branch ${b.source+1}: ${b.start} to ${b.end}`).join('; '));
+    markup+=`<path class="barcode-cursor" d="M${x(cut)} 20V391"/><text class="neuron-label" x="180" y="430" text-anchor="middle">distance along branches (μm)</text>`;
+    svg.innerHTML=markup;svg.setAttribute('aria-label',c.name+': '+c.descriptor.bars.map(b=>`branch ${b.source+1}, ${number(b.start)} to ${number(b.end)} micrometres`).join('; '));
   }
-  const comparisons=[
-    {key:'tufted',label:'A · tufted crown',tree:synthesize(examples.tufted,41)},
-    {key:'distributed',label:'B · distributed branching',tree:synthesize(examples.distributed,41)}
-  ];
-  // A narrow crown makes the long-trunk example visually distinct, preserving all radii.
-  comparisons[0].tree.nodes.forEach(n=>n.theta*=.46);
-  comparisons.forEach(c=>c.descriptor=describe(c.tree));
   function renderTmd(){
-    const radius=Number(byId('tmd-radius').value),selected=byId('tmd-highlight').value;
+    const percent=Number(byId('tmd-radius').value);
     const counts=comparisons.map(c=>{
-      drawTree(byId('tmd-tree-'+c.key),c.tree,c.descriptor,{radius,selected,filtration:true});
-      drawBarcode(byId('tmd-barcode-'+c.key),c.descriptor.bars,{radius,selected,filtration:true});
-      const count=c.descriptor.bars.filter(b=>active(b,radius)).length;
-      byId('tmd-tree-'+c.key).setAttribute('aria-label',`${c.label}: synthetic tree at radius ${radius}, with ${count} connected pieces outside the circle.`);
-      return `${c.label}: ${count} ${count===1?'piece':'pieces'}`;
+      const max=Math.max(...c.descriptor.bars.map(b=>b.end)),cut=percent*max/100;
+      drawCell(c,cut);drawCellBarcode(c,cut);
+      const count=c.descriptor.bars.filter(b=>active(b,cut)).length;
+      byId('tmd-tree-'+c.key).setAttribute('aria-label',`${c.name}, reconstructed cell with ${c.tips} apical terminals. ${count} connected pieces beyond a path-distance cut of ${number(cut)} micrometres.`);
+      return `${c.name}: ${count} ${count===1?'piece':'pieces'}`;
     });
-    byId('tmd-radius-value').value=radius;
-    byId('tmd-readout').textContent='Outside the circle — '+counts.join(' · ')+'. Both trees have 8 tips and a maximum radius of 100.';
+    byId('tmd-radius-value').value=percent+'%';
+    byId('tmd-readout').textContent='Beyond the cut — '+counts.join(' · ')+'.';
   }
+  byId('tmd-highlight').innerHTML='<option value="all">All branches</option>'+comparisons.map(c=>`<optgroup label="${c.name}">`+c.descriptor.bars.map(b=>`<option value="${c.key}:${b.source}">${c.name} · branch ${b.source+1}</option>`).join('')+'</optgroup>').join('');
   byId('tmd-highlight').addEventListener('change',renderTmd);byId('tmd-radius').addEventListener('input',renderTmd);
   // These are recordings of official NeuroTS runs, not simulations of growth in the browser.
   const recordings=AeroNeuroTSRecordings,allRecordings=[recordings.reference,...recordings.recordings];

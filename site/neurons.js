@@ -39,15 +39,17 @@
   function describe(tree){
     const nodes=tree.nodes,children=nodes.map(()=>[]),owners=Array(nodes.length),bars=[];
     nodes.forEach((n,i)=>{if(i){if(n.parent<0||n.parent>=i||n.r<=nodes[n.parent].r)throw new Error('Tree must be rooted, ordered and radially increasing.');children[n.parent].push(i);}});
-    function visit(id){
+    const survivors=Array(nodes.length);
+    // Parent-before-child storage permits an iterative postorder, including long real arbors.
+    for(let id=nodes.length-1;id>=0;id--){
       const n=nodes[id];let survivor={tip:id,end:n.r,source:n.source};
       if(children[id].length){
-        const active=children[id].map(visit).sort((a,b)=>b.end-a.end||a.tip-b.tip);survivor=active[0];
-        active.slice(1).forEach(s=>bars.push({start:n.r,...s}));
+        const branches=children[id].map(child=>survivors[child]).sort((a,b)=>b.end-a.end||a.tip-b.tip);
+        survivor=branches[0];branches.slice(1).forEach(s=>bars.push({start:n.r,...s}));
       }
-      owners[id]=survivor.source;return survivor;
+      survivors[id]=survivor;owners[id]=survivor.source;
     }
-    const survivor=visit(0);bars.push({start:0,...survivor});bars.sort((a,b)=>a.start-b.start||b.end-a.end);
+    bars.push({start:0,...survivors[0]});bars.sort((a,b)=>a.start-b.start||b.end-a.end);
     return {bars,owners};
   }
   const active=(bar,r)=>r===0?bar.start===0:bar.start<r&&r<=bar.end;

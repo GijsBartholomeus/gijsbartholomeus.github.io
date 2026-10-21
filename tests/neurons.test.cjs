@@ -52,3 +52,20 @@ for(const r of [recorded.reference,...recorded.recordings]){
  assert.ok(fs.existsSync(require('node:path').join(__dirname,'../site/assets',r.swc)));
 }
 console.log('Recorded NeuroTS checks passed: source barcode, tree geometry, timestamps and downloadable morphology files.');
+// Biological examples: independent JS descriptors agree with the official TMD package.
+vm.runInNewContext(fs.readFileSync(require('node:path').join(__dirname,'../site/assets/tmd-cells.js'),'utf8'),context);
+assert.equal(context.window.AeroTMDCells.length,2);
+for(const cell of context.window.AeroTMDCells){
+ const result=describe(cell);
+ assert.ok(sameBarcode(result.bars,cell.official,1e-4),'Real-cell barcode must agree with TMD 2.4.3');
+ assert.equal(result.bars.length,cell.tips);
+ assert.ok(result.owners.every(x=>Number.isInteger(x)&&x>=0&&x<cell.tips));
+ for(const n of cell.nodes.slice(1)){
+  const p=cell.nodes[n.parent];
+  assert.ok(Math.abs((n.r-p.r)-Math.hypot(n.x-p.x,n.y-p.y,n.z-p.z))<1e-4,'Metric uses the original 3D path length');
+ }
+ assert.equal(result.bars.filter(b=>active(b,0)).length,1);
+}
+assert.equal(context.window.AeroTMDCells[0].tips,30);
+assert.equal(context.window.AeroTMDCells[1].tips,8);
+console.log('Biological cell checks passed: 30- and 8-terminal reconstructions agree with official TMD.');

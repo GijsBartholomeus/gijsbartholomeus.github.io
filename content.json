@@ -13,31 +13,79 @@
   "interests": [
     {
       "title": "Topological data analysis",
-      "text": "Topological methods for point clouds, trees, and other data."
+      "text": "Topological methods for point clouds, trees, and other data.",
+      "references": [
+        {
+          "authors": "Carlsson (2009)",
+          "title": "Topology and data",
+          "url": "https://doi.org/10.1090/S0273-0979-09-01249-X"
+        }
+      ]
     },
     {
       "title": "Algebraic topology",
-      "text": "Homology, persistence, and the mathematics behind topological descriptors."
+      "text": "Homology, persistence, and the mathematics behind topological descriptors.",
+      "references": [
+        {
+          "authors": "Hatcher (2002)",
+          "title": "Algebraic Topology",
+          "url": "https://pi.math.cornell.edu/~hatcher/AT/ATpage.html"
+        }
+      ]
     },
     {
       "title": "Mathematical biology",
-      "text": "Mathematical models of biological systems."
+      "text": "Mathematical models of biological systems.",
+      "references": [
+        {
+          "authors": "Murray (2002)",
+          "title": "Mathematical Biology I: An Introduction",
+          "url": "https://doi.org/10.1007/b98868"
+        }
+      ]
     },
     {
       "title": "Gene regulatory networks",
-      "text": "How interactions between genes give rise to different dynamical behaviours."
+      "text": "How interactions between genes give rise to different dynamical behaviours.",
+      "references": [
+        {
+          "authors": "Elowitz & Leibler (2000)",
+          "title": "A synthetic oscillatory network of transcriptional regulators",
+          "url": "https://doi.org/10.1038/35002125"
+        }
+      ]
     },
     {
       "title": "Sloppiness",
-      "text": "Why some combinations of model parameters matter much more than others."
+      "text": "Why some combinations of model parameters matter much more than others.",
+      "references": [
+        {
+          "authors": "Gutenkunst, Waterfall, Casey, Brown, Myers & Sethna (2007)",
+          "title": "Universally Sloppy Parameter Sensitivities in Systems Biology Models",
+          "url": "https://doi.org/10.1371/journal.pcbi.0030189"
+        },
+        {
+          "authors": "Transtrum, Machta, Brown, Daniels, Myers & Sethna (2015)",
+          "title": "Perspective: Sloppiness and emergent theories in physics, biology, and beyond",
+          "url": "https://doi.org/10.1063/1.4923066"
+        }
+      ]
     },
     {
       "title": "Information geometry",
-      "text": "The geometry of statistical models and their parameter spaces."
+      "text": "The geometry of statistical models and their parameter spaces.",
+      "references": [
+        {
+          "authors": "Transtrum, Machta & Sethna (2011)",
+          "title": "Geometry of nonlinear least squares with applications to sloppy models and optimization",
+          "url": "https://doi.org/10.1103/PhysRevE.83.036701"
+        }
+      ]
     },
     {
       "title": "Medicine",
-      "text": "Questions at the intersection of mathematics and clinical research."
+      "text": "Questions at the intersection of mathematics and clinical research.",
+      "references": []
     }
   ],
   "publications": [
@@ -91,5 +139,13 @@
     "Sloppiness",
     "Information geometry",
     "Medicine"
-  ]
+  ],
+  "medscio": {
+    "intro": "Alongside my DPhil, I work with Medscio BV, a Dutch medical startup working to help medical record systems communicate with each other.",
+    "quote": "The utopia where all hospitals use the same electronic medical record system, or at least medical record systems that can talk to each other, so that doctors can look up what the doctor you saw last week in a different hospital decided instead of running all the same tests over again for $5000.",
+    "author": "Scott Alexander",
+    "title": "Meditations on Moloch",
+    "year": "2014",
+    "url": "https://slatestarcodex.com/2014/07/30/meditations-on-moloch/"
+  }
 }
