@@ -61,11 +61,8 @@
   function updateClock(){
     const date=new Date(),parts=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/London',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(date);
     const h=Number(parts.find(p=>p.type==='hour').value),m=Number(parts.find(p=>p.type==='minute').value);
-    byId('hour-hand').style.transform=`rotate(${h*30+m/2}deg)`;byId('minute-hand').style.transform=`rotate(${m*6}deg)`;
     const time=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
     byId('task-time').textContent=time;byId('task-time').dateTime=date.toISOString();
-    byId('oxford-time').textContent=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/London',weekday:'short',day:'numeric',month:'short'}).format(date);
-    byId('oxford-time').dateTime=date.toISOString();
     byId('task-date').textContent=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/London',day:'2-digit',month:'2-digit',year:'numeric'}).format(date);
     byId('year').textContent=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/London',year:'numeric'}).format(date);
   }

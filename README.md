@@ -18,7 +18,7 @@ Open http://127.0.0.1:8000. Stop with Ctrl+C. You can also open
 ## Included
 
 - Six folders: About me, Research, Teaching, CV, Contact, and TDA demos.
-- Start menu, taskbar, live Oxford clock, draggable profile window on desktop,
+- Start menu, taskbar, taskbar clock, draggable profile window on desktop,
   minimize/close/restore, maximize, back navigation, and linkable section URLs.
 - Daylight and evening themes.
 - Responsive mobile layout with standard page scrolling.
@@ -136,7 +136,7 @@ Method references:
   dendritic morphologies*. https://doi.org/10.1016/j.celrep.2022.110586
 
 Run `node tests/neurons.test.cjs` to check the elder rule, filtration limits,
-invalid inputs, and 200 independent barcode round trips across random seeds.
+invalid inputs, and independent barcode round trips across random seeds.
 
 ### Recorded NeuroTS synthesis
 
@@ -163,3 +163,17 @@ need not reproduce the source barcode or branching structure exactly.
 To regenerate, install `demo-source/neurots/requirements.txt` in a Python 3.12
 virtual environment, then run `python demo-source/neurots/generate.py`. Scientific Python
 dependencies are needed only for this offline step. The website remains static.
+
+### Comparing morphologies and synthesis runs
+
+The TMD view compares a long trunk with a terminal tuft against a tree that
+branches earlier and more broadly. Both are synthetic examples with eight tips
+and maximum radius 100; the radial sweep and branch highlighting apply to both.
+They illustrate distinct branching patterns rather than labelled biological
+cell types. Morphological cell-type classification is cited to Kanari et al.
+(2019), https://doi.org/10.1093/cercor/bhy339.
+
+The third box of the NeuroTS pipeline displays all three recorded trees side by
+side. The shared slider and playback set the same relative completion percentage
+for each run, whose total algorithm-step counts differ. All three downloads are
+available together. The right-hand desktop gadgets have been removed.

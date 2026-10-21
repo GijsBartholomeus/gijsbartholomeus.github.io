@@ -41,7 +41,7 @@
     for(const r of [0,25,50,75,100])markup+=`<path class="barcode-grid" d="M${x(r)} 22V236"/><text class="neuron-label" x="${x(r)}" y="251" text-anchor="middle">${r}</text>`;
     bars.forEach((bar,i)=>{
       const y=38+i*25,on=!filtration||active(bar,radius),chosen=selected==='all'||Number(selected)===bar.source;
-      const opacity=on&&chosen?1:.2;
+      const opacity=chosen?(on?1:.55):.18;
       markup+=`<text class="neuron-label" x="20" y="${y+4}" text-anchor="middle">${bar.source+1}</text><path d="M${x(bar.start)} ${y}H${x(bar.end)}" stroke="${colour(bar.source)}" stroke-width="6" opacity="${opacity}" stroke-linecap="round"/>`;
       markup+=`<circle cx="${x(bar.start)}" cy="${y}" r="3" fill="${colour(bar.source)}" opacity="${opacity}"/><circle cx="${x(bar.end)}" cy="${y}" r="3" fill="${colour(bar.source)}" opacity="${opacity}"/>`;
     });
@@ -50,28 +50,32 @@
     svg.innerHTML=markup;
     svg.setAttribute('aria-label',bars.map(b=>`Branch ${b.source+1}: ${b.start} to ${b.end}`).join('; '));
   }
-  let tmdTree,tmdDescriptor;
-  function setTmdExample(){
-    tmdTree=synthesize(examples[byId('tmd-example').value],41);tmdDescriptor=describe(tmdTree);
-    byId('tmd-highlight').innerHTML='<option value="all">All branches</option>'+tmdDescriptor.bars.map(b=>`<option value="${b.source}">Branch ${b.source+1} · ${b.start}–${b.end}</option>`).join('');renderTmd();
-  }
+  const comparisons=[
+    {key:'tufted',label:'A · tufted crown',tree:synthesize(examples.tufted,41)},
+    {key:'distributed',label:'B · distributed branching',tree:synthesize(examples.distributed,41)}
+  ];
+  // A narrow crown makes the long-trunk example visually distinct, preserving all radii.
+  comparisons[0].tree.nodes.forEach(n=>n.theta*=.46);
+  comparisons.forEach(c=>c.descriptor=describe(c.tree));
   function renderTmd(){
     const radius=Number(byId('tmd-radius').value),selected=byId('tmd-highlight').value;
-    drawTree(byId('tmd-tree'),tmdTree,tmdDescriptor,{radius,selected,filtration:true});
-    drawBarcode(byId('tmd-barcode'),tmdDescriptor.bars,{radius,selected,filtration:true});
-    const count=tmdDescriptor.bars.filter(b=>active(b,radius)).length;
+    const counts=comparisons.map(c=>{
+      drawTree(byId('tmd-tree-'+c.key),c.tree,c.descriptor,{radius,selected,filtration:true});
+      drawBarcode(byId('tmd-barcode-'+c.key),c.descriptor.bars,{radius,selected,filtration:true});
+      const count=c.descriptor.bars.filter(b=>active(b,radius)).length;
+      byId('tmd-tree-'+c.key).setAttribute('aria-label',`${c.label}: synthetic tree at radius ${radius}, with ${count} connected pieces outside the circle.`);
+      return `${c.label}: ${count} ${count===1?'piece':'pieces'}`;
+    });
     byId('tmd-radius-value').value=radius;
-    byId('tmd-readout').textContent=`Outside the circle: ${count} connected ${count===1?'piece':'pieces'}. ${tmdDescriptor.bars.length} bars in the full descriptor.`;
-    byId('tmd-tree').setAttribute('aria-label',`Synthetic branching tree at radius ${radius}: ${count} connected pieces outside the circle. Branch numbers match the barcode.`);
+    byId('tmd-readout').textContent='Outside the circle — '+counts.join(' · ')+'. Both trees have 8 tips and a maximum radius of 100.';
   }
-  byId('tmd-example').addEventListener('change',setTmdExample);
   byId('tmd-highlight').addEventListener('change',renderTmd);byId('tmd-radius').addEventListener('input',renderTmd);
   // These are recordings of official NeuroTS runs, not simulations of growth in the browser.
   const recordings=AeroNeuroTSRecordings,allRecordings=[recordings.reference,...recordings.recordings];
-  let sample=0,playing=false,frame=0,last=0,visible=false;
+  let playing=false,frame=0,last=0,visible=false;
   const play=byId('tns-play'),progress=byId('tns-progress');
   function stop(){playing=false;cancelAnimationFrame(frame);play.textContent='Play synthesis';play.setAttribute('aria-pressed','false');byId('tns-readout').setAttribute('aria-live','polite');}
-  function drawRecording(svg,recording,percent){
+  function drawRecording(svg,recording,percent,label=false){
     const dimension=byId('tns-view').value==='zy'?2:0;
     const vertices=allRecordings.flatMap(r=>r.vertices);
     const xs=vertices.map(p=>p[dimension]),ys=vertices.map(p=>p[1]);
@@ -87,7 +91,7 @@
       else if(va[3]<step&&vb[3]>va[3]){const t=(step-va[3])/(vb[3]-va[3]);grown+=move+`L${number(pa[0]+t*(pb[0]-pa[0]))} ${number(pa[1]+t*(pb[1]-pa[1]))}`;}
     }
     const soma=project([0,0,0]),bar=100*scale;
-    svg.innerHTML=`<path class="neurots-ghost" d="${background}"/><path class="neurots-grown" d="${grown}"/><circle class="neuron-soma" cx="${number(soma[0])}" cy="${number(soma[1])}" r="${number(Math.max(3,12.5*scale))}"/><path class="neurots-scalebar" d="M25 325h${number(bar)}"/><text class="neuron-label" x="25" y="319">100 μm</text>`;
+    svg.innerHTML=(label?`<text class="neuron-label neurots-seed" x="180" y="18" text-anchor="middle">seed ${recording.seed}</text>`:'')+`<path class="neurots-ghost" d="${background}"/><path class="neurots-grown" d="${grown}"/><circle class="neuron-soma" cx="${number(soma[0])}" cy="${number(soma[1])}" r="${number(Math.max(3,12.5*scale))}"/><path class="neurots-scalebar" d="M25 325h${number(bar)}"/><text class="neuron-label" x="25" y="319">100 μm</text>`;
   }
   function drawRecordedBarcode(){
     const svg=byId('tns-barcode'),bars=recordings.target,maximum=Math.ceil(Math.max(...bars.map(b=>b[1]))/100)*100,x=r=>40+280*r/maximum;
@@ -97,12 +101,14 @@
     svg.innerHTML=markup;svg.setAttribute('aria-label',`${bars.length} TMD bars extracted from the source tree using path distance in micrometres. `+bars.map(([a,b])=>`${number(a)} to ${number(b)}`).join('; '));
   }
   function renderTns(){
-    const recording=recordings.recordings[sample],growth=Number(progress.value);
-    drawRecording(byId('tns-tree'),recording,growth);
-    byId('tns-progress-value').value=growth+'%';byId('tns-generation').textContent=`Recording ${sample+1} of ${recordings.recordings.length} · seed ${recording.seed}`;
-    byId('tns-readout').textContent=growth===100?`${recordings.software} · ${recording.tips} tips · ${recording.sections} sections · ${recording.steps} recorded growth steps.`:`Algorithm step ${Math.round(recording.steps*growth/100)} of ${recording.steps}.`;
-    byId('tns-tree').setAttribute('aria-label',`Recorded NeuroTS tree, seed ${recording.seed}, at ${growth} percent of its synthesis. ${recording.tips} terminal tips in the finished tree.`);
-    byId('tns-download').href='assets/'+recording.swc;
+    const growth=Number(progress.value);
+    recordings.recordings.forEach(recording=>{
+      const svg=byId('tns-tree-'+recording.seed);
+      drawRecording(svg,recording,growth,true);
+      svg.setAttribute('aria-label',`Recorded NeuroTS tree, seed ${recording.seed}, at ${growth} percent of its synthesis. ${recording.tips} terminal tips in the finished tree.`);
+    });
+    byId('tns-progress-value').value=growth+'%';
+    byId('tns-readout').textContent=growth===100?`${recordings.software} · three completed trees · ${recordings.recordings.map(r=>r.tips).join(', ')} tips.`:'Recorded steps — '+recordings.recordings.map(r=>`seed ${r.seed}: ${Math.round(r.steps*growth/100)} / ${r.steps}`).join(' · ')+'.';
   }
   function tick(time){
     if(!playing||!visible||document.hidden){stop();return;}
@@ -110,7 +116,6 @@
     frame=requestAnimationFrame(tick);
   }
   play.addEventListener('click',()=>{if(playing){stop();return;}if(Number(progress.value)===100)progress.value=0;playing=true;last=0;play.textContent='Pause synthesis';play.setAttribute('aria-pressed','true');byId('tns-readout').setAttribute('aria-live','off');frame=requestAnimationFrame(tick);});
-  byId('tns-generate').addEventListener('click',()=>{stop();sample=(sample+1)%recordings.recordings.length;progress.value=100;renderTns();});
   byId('tns-reset').addEventListener('click',()=>{stop();progress.value=0;renderTns();});
   byId('tns-view').addEventListener('change',()=>{drawRecording(byId('tns-source'),recordings.reference,100);renderTns();});
   progress.addEventListener('input',()=>{stop();renderTns();});
@@ -119,8 +124,8 @@
     document.querySelectorAll('.demo-stage').forEach(s=>s.hidden=s.id!=='demo-'+button.dataset.demo);
     byId('demo-'+button.dataset.demo).scrollIntoView({block:'start',behavior:'instant'});
   }));
-  new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;if(!visible)stop();}).observe(byId('tns-tree'));
+  new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;if(!visible)stop();}).observe(byId('demo-tns'));
   document.addEventListener('aero-leave-demos',stop);document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();});
   matchMedia('(prefers-reduced-motion:reduce)').addEventListener('change',stop);
-  setTmdExample();drawRecording(byId('tns-source'),recordings.reference,100);drawRecordedBarcode();renderTns();
+  renderTmd();drawRecording(byId('tns-source'),recordings.reference,100);drawRecordedBarcode();renderTns();
 })();

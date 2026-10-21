@@ -17,9 +17,18 @@ for(const intervals of Object.values(examples))for(let seed=1;seed<=100;seed++){
  if(intervals===examples.branching)topologies.add(JSON.stringify(tree.nodes.map(n=>[n.parent,n.r])));
 }
 assert.ok(topologies.size>5,'The same barcode should allow different branching structures');
+// Equal tip count and scale, distinct persistence: branching starts late versus early.
+const tufted=describe(synthesize(examples.tufted,41)).bars;
+const distributed=describe(synthesize(examples.distributed,41)).bars;
+assert.equal(tufted.length,8);assert.equal(distributed.length,8);
+assert.equal(Math.max(...tufted.map(b=>b.end)),100);
+assert.equal(Math.max(...distributed.map(b=>b.end)),100);
+assert.ok(!sameBarcode(tufted,distributed));
+assert.equal(tufted.filter(b=>active(b,50)).length,1);
+assert.equal(distributed.filter(b=>active(b,50)).length,5);
 assert.throws(()=>synthesize([[0,20],[10,30]]));
 assert.throws(()=>describe({nodes:[{parent:-1,r:0},{parent:0,r:10},{parent:1,r:5}]}));
-console.log('Neuron checks passed: elder rule, merge events, invalid trees and 200 barcode round trips.');
+console.log('Neuron checks passed: elder rule, merge events, invalid trees and randomized barcode round trips.');
 // Validate the shipped official NeuroTS recordings and their source-to-barcode provenance.
 const fs=require('node:fs'),vm=require('node:vm');
 const context={window:{}};

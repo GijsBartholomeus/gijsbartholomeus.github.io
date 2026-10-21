@@ -3,7 +3,9 @@
   'use strict';
   const examples={
     branching:[[0,100],[12,82],[24,94],[36,65],[43,87],[55,77],[67,91],[74,96]],
-    small:[[0,100],[23,80],[46,92],[61,72]]
+    small:[[0,100],[23,80],[46,92],[61,72]],
+    tufted:[[0,100],[72,94],[75,96],[78,92],[81,98],[84,95],[87,99],[90,97]],
+    distributed:[[0,100],[10,56],[20,82],[30,95],[40,74],[50,91],[60,85],[70,98]]
   };
   function rng(seed){let state=seed>>>0;return ()=>{state+=0x6D2B79F5;let x=state;x=Math.imul(x^(x>>>15),x|1);x^=x+Math.imul(x^(x>>>7),x|61);return ((x^(x>>>14))>>>0)/4294967296;};}
   function synthesize(intervals,seed=1){
